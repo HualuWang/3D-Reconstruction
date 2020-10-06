@@ -1,10 +1,9 @@
 
-// documentView.cpp : CdocumentView ÀàµÄÊµÏÖ
+// documentView.cpp : CdocumentView ç±»çš„å®ç°
 //
-
 #include "stdafx.h"
-// SHARED_HANDLERS ¿ÉÒÔÔÚÊµÏÖÔ¤ÀÀ¡¢ËõÂÔÍ¼ºÍËÑË÷É¸Ñ¡Æ÷¾ä±úµÄ
-// ATL ÏîÄ¿ÖĞ½øĞĞ¶¨Òå£¬²¢ÔÊĞíÓë¸ÃÏîÄ¿¹²ÏíÎÄµµ´úÂë¡£
+// SHARED_HANDLERS å¯ä»¥åœ¨å®ç°é¢„è§ˆã€ç¼©ç•¥å›¾å’Œæœç´¢ç­›é€‰å™¨å¥æŸ„çš„
+// ATL é¡¹ç›®ä¸­è¿›è¡Œå®šä¹‰ï¼Œå¹¶å…è®¸ä¸è¯¥é¡¹ç›®å…±äº«æ–‡æ¡£ä»£ç ã€‚
 #ifndef SHARED_HANDLERS
 #include "document.h"
 #endif
@@ -33,24 +32,22 @@
 #pragma comment( lib, "libmx.lib")
 #pragma comment( lib,"libmat.lib")
 
-
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-int Max[1200][1600] = { 0 };			//ÓÃÓÚ´æ·ÅÀ­ÆÕÀ­Ë¹±ä»»µÄ×î´óÖµ
-int high[1200][1600] = { 0 };			//ÓÃÓÚ´æ·ÅÏµÁĞÍ¼ÏñµÄĞòÁĞºÅ
-int Lap[1200][1600] = { 0 };			//ÓÃÓÚ±£´æ»Ò¶ÈÖµ
-int newLap[1200][1600] = { 0 };		//ÓÃÓÚ±£´æÀ­ÆÕÀ­Ë¹±ä»»ºóµÄ¾Û½¹Öµ
-float newLap_sum[69] = { 0 };			//ÓÃÓÚ±£´æÃ¿ÕÅÍ¼Ïñ¾Û½¹ÖµÖ®ºÍ
+int Max[1200][1600] = { 0 };			//ç”¨äºå­˜æ”¾æ‹‰æ™®æ‹‰æ–¯å˜æ¢çš„æœ€å¤§å€¼
+int high[1200][1600] = { 0 };			//ç”¨äºå­˜æ”¾ç³»åˆ—å›¾åƒçš„åºåˆ—å·
+int Lap[1200][1600] = { 0 };			//ç”¨äºä¿å­˜ç°åº¦å€¼
+int newLap[1200][1600] = { 0 };		//ç”¨äºä¿å­˜æ‹‰æ™®æ‹‰æ–¯å˜æ¢åçš„èšç„¦å€¼
+float newLap_sum[69] = { 0 };			//ç”¨äºä¿å­˜æ¯å¼ å›¾åƒèšç„¦å€¼ä¹‹å’Œ
 
 // CdocumentView
 
 IMPLEMENT_DYNCREATE(CdocumentView, CView)
 
 BEGIN_MESSAGE_MAP(CdocumentView, CView)
-	// ±ê×¼´òÓ¡ÃüÁî
+	// æ ‡å‡†æ‰“å°å‘½ä»¤
 	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
@@ -65,7 +62,7 @@ BEGIN_MESSAGE_MAP(CdocumentView, CView)
 	ON_COMMAND(IDM_OTHER, &CdocumentView::OnOther)
 END_MESSAGE_MAP()
 
-// CdocumentView ¹¹Ôì/Îö¹¹
+// CdocumentView æ„é€ /ææ„
 
 CdocumentView::CdocumentView()
 	: m_threshold(300)
@@ -76,7 +73,7 @@ CdocumentView::CdocumentView()
 	, m_Point_x(0)
 	, m_Point_y(0)
 {
-	// TODO: ÔÚ´Ë´¦Ìí¼Ó¹¹Ôì´úÂë
+	// TODO: åœ¨æ­¤å¤„æ·»åŠ æ„é€ ä»£ç 
 	m_small = 0;
 	m_big = 0;
 	m_SrcImg = NULL;
@@ -88,13 +85,13 @@ CdocumentView::~CdocumentView()
 
 BOOL CdocumentView::PreCreateWindow(CREATESTRUCT& cs)
 {
-	// TODO: ÔÚ´Ë´¦Í¨¹ıĞŞ¸Ä
-	//  CREATESTRUCT cs À´ĞŞ¸Ä´°¿ÚÀà»òÑùÊ½
+	// TODO: åœ¨æ­¤å¤„é€šè¿‡ä¿®æ”¹
+	//  CREATESTRUCT cs æ¥ä¿®æ”¹çª—å£ç±»æˆ–æ ·å¼
 
 	return CView::PreCreateWindow(cs);
 }
 
-// CdocumentView »æÖÆ
+// CdocumentView ç»˜åˆ¶
 
 void CdocumentView::OnDraw(CDC* pDC)
 {
@@ -103,34 +100,34 @@ void CdocumentView::OnDraw(CDC* pDC)
 	if (!pDoc)
 		return;
 
-	// TODO: ÔÚ´Ë´¦Îª±¾»úÊı¾İÌí¼Ó»æÖÆ´úÂë
-	if (m_EntName.Compare(_T("bmp")) == 0)      //bmp¸ñÊ½
+	// TODO: åœ¨æ­¤å¤„ä¸ºæœ¬æœºæ•°æ®æ·»åŠ ç»˜åˆ¶ä»£ç 
+	if (m_EntName.Compare(_T("bmp")) == 0)      //bmpæ ¼å¼
 	{
-		ShowBitmap(pDC, m_BmpName);               //ÏÔÊ¾Í¼Æ¬
+		ShowBitmap(pDC, m_BmpName);               //æ˜¾ç¤ºå›¾ç‰‡
 	}
 }
 
 
-// CdocumentView ´òÓ¡
+// CdocumentView æ‰“å°
 
 BOOL CdocumentView::OnPreparePrinting(CPrintInfo* pInfo)
 {
-	// Ä¬ÈÏ×¼±¸
+	// é»˜è®¤å‡†å¤‡
 	return DoPreparePrinting(pInfo);
 }
 
 void CdocumentView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
-	// TODO: Ìí¼Ó¶îÍâµÄ´òÓ¡Ç°½øĞĞµÄ³õÊ¼»¯¹ı³Ì
+	// TODO: æ·»åŠ é¢å¤–çš„æ‰“å°å‰è¿›è¡Œçš„åˆå§‹åŒ–è¿‡ç¨‹
 }
 
 void CdocumentView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/)
 {
-	// TODO: Ìí¼Ó´òÓ¡ºó½øĞĞµÄÇåÀí¹ı³Ì
+	// TODO: æ·»åŠ æ‰“å°åè¿›è¡Œçš„æ¸…ç†è¿‡ç¨‹
 }
 
 
-// CdocumentView Õï¶Ï
+// CdocumentView è¯Šæ–­
 
 #ifdef _DEBUG
 void CdocumentView::AssertValid() const
@@ -143,7 +140,7 @@ void CdocumentView::Dump(CDumpContext& dc) const
 	CView::Dump(dc);
 }
 
-CdocumentDoc* CdocumentView::GetDocument() const // ·Çµ÷ÊÔ°æ±¾ÊÇÄÚÁªµÄ
+CdocumentDoc* CdocumentView::GetDocument() const // éè°ƒè¯•ç‰ˆæœ¬æ˜¯å†…è”çš„
 {
 	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CdocumentDoc)));
 	return (CdocumentDoc*)m_pDocument;
@@ -151,78 +148,78 @@ CdocumentDoc* CdocumentView::GetDocument() const // ·Çµ÷ÊÔ°æ±¾ÊÇÄÚÁªµÄ
 #endif //_DEBUG
 
 
-// CdocumentView ÏûÏ¢´¦Àí³ÌĞò
+// CdocumentView æ¶ˆæ¯å¤„ç†ç¨‹åº
 
 
 void CdocumentView::ShowBitmap(CDC* pDC, CString BmpName)
 {
-	//¶¨ÒåbitmapÖ¸Õë µ÷ÓÃº¯ÊıLoadImage×°ÔØÎ»Í¼
+	//å®šä¹‰bitmapæŒ‡é’ˆ è°ƒç”¨å‡½æ•°LoadImageè£…è½½ä½å›¾
 	HBITMAP m_hBitmap;
 	m_hBitmap = (HBITMAP)LoadImage(NULL, BmpName, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_DEFAULTSIZE | LR_CREATEDIBSECTION);
 
 	if (m_Cbitmap.m_hObject)
 	{
-		m_Cbitmap.Detach();				 //ÇĞ¶ÏCWndºÍ´°¿ÚÁªÏµ
+		m_Cbitmap.Detach();				 //åˆ‡æ–­CWndå’Œçª—å£è”ç³»
 	}
-	m_Cbitmap.Attach(m_hBitmap);		 //½«¾ä±úHBITMAP m_hBitmapÓëCBitmap m_bitmap¹ØÁª
+	m_Cbitmap.Attach(m_hBitmap);		 //å°†å¥æŸ„HBITMAP m_hBitmapä¸CBitmap m_bitmapå…³è”
 
-	//±ß½ç
+	//è¾¹ç•Œ
 	CRect rect;
 	GetClientRect(&rect); 
 
-	//¶¨Òå²¢´´½¨Ò»¸öÄÚ´æÉè±¸»·¾³DC
+	//å®šä¹‰å¹¶åˆ›å»ºä¸€ä¸ªå†…å­˜è®¾å¤‡ç¯å¢ƒDC
 	CDC dcBmp;
-	if (!dcBmp.CreateCompatibleDC(pDC))   //´´½¨¼æÈİĞÔµÄDC
+	if (!dcBmp.CreateCompatibleDC(pDC))   //åˆ›å»ºå…¼å®¹æ€§çš„DC
 		return;
 
-	BITMAP bmp;                           //ÁÙÊ±bmpÍ¼Æ¬±äÁ¿
-	m_Cbitmap.GetBitmap(&bmp);            //½«Í¼Æ¬ÔØÈëÎ»Í¼ÖĞ
+	BITMAP bmp;                           //ä¸´æ—¶bmpå›¾ç‰‡å˜é‡
+	m_Cbitmap.GetBitmap(&bmp);            //å°†å›¾ç‰‡è½½å…¥ä½å›¾ä¸­
 
 	CBitmap *pbmpOld = NULL;
-	dcBmp.SelectObject(&m_Cbitmap);        //½«Î»Í¼Ñ¡ÈëÁÙÊ±ÄÚ´æÉè±¸»·¾³
+	dcBmp.SelectObject(&m_Cbitmap);        //å°†ä½å›¾é€‰å…¥ä¸´æ—¶å†…å­˜è®¾å¤‡ç¯å¢ƒ
 
-	//Í¼Æ¬ÏÔÊ¾µ÷ÓÃº¯ÊıstretchBlt
+	//å›¾ç‰‡æ˜¾ç¤ºè°ƒç”¨å‡½æ•°stretchBlt
 	pDC->StretchBlt(0, 0, bmp.bmWidth, bmp.bmHeight, &dcBmp, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
 
-	dcBmp.SelectObject(pbmpOld);           //»Ö¸´ÁÙÊ±DCµÄÎ»Í¼
-	DeleteObject(&m_Cbitmap);              //É¾³ıÄÚ´æÖĞµÄÎ»Í¼
-	dcBmp.DeleteDC();                      //É¾³ıCreateCompatibleDCµÃµ½µÄÍ¼Æ¬DC
+	dcBmp.SelectObject(pbmpOld);           //æ¢å¤ä¸´æ—¶DCçš„ä½å›¾
+	DeleteObject(&m_Cbitmap);              //åˆ é™¤å†…å­˜ä¸­çš„ä½å›¾
+	dcBmp.DeleteDC();                      //åˆ é™¤CreateCompatibleDCå¾—åˆ°çš„å›¾ç‰‡DC
 }
 
 void CdocumentView::OnFileOpen()
 {
-	// TODO: ÔÚ´ËÌí¼ÓÃüÁî´¦Àí³ÌĞò´úÂë
-	//ËÄÖÖ¸ñÊ½µÄÎÄ¼ş£ºbmp gif jpg tiff
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
+	//å››ç§æ ¼å¼çš„æ–‡ä»¶ï¼šbmp gif jpg tiff
 	CString filter;
-	filter = "ËùÓĞÎÄ¼ş(*.bmp,*.jpg,*.gif,*tiff)|*.bmp;*.jpg;*.gif;*.tiff| BMP(*.bmp)|*.bmp| JPG(*.jpg)|*.jpg| GIF(*.gif)|*.gif| TIFF(*.tiff)|*.tiff||";
+	filter = "æ‰€æœ‰æ–‡ä»¶(*.bmp,*.jpg,*.gif,*tiff)|*.bmp;*.jpg;*.gif;*.tiff| BMP(*.bmp)|*.bmp| JPG(*.jpg)|*.jpg| GIF(*.gif)|*.gif| TIFF(*.tiff)|*.tiff||";
 	CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY, filter, NULL);
 
-	//°´ÏÂÈ·¶¨°´Å¥ dlg.DoModal() º¯ÊıÏÔÊ¾¶Ô»°¿ò
+	//æŒ‰ä¸‹ç¡®å®šæŒ‰é’® dlg.DoModal() å‡½æ•°æ˜¾ç¤ºå¯¹è¯æ¡†
 	if (dlg.DoModal() == IDOK)
 	{
-		m_BmpName = dlg.GetPathName();     //»ñÈ¡ÎÄ¼şÂ·¾¶Ãû   ÈçD:\pic\abc.bmp
-		m_EntName = dlg.GetFileExt();      //»ñÈ¡ÎÄ¼şÀ©Õ¹Ãû
-		CString FileName = dlg.GetFileName();	 //»ñÈ¡ÎÄ¼şÃû
+		m_BmpName = dlg.GetPathName();     //è·å–æ–‡ä»¶è·¯å¾„å   å¦‚D:\pic\abc.bmp
+		m_EntName = dlg.GetFileExt();      //è·å–æ–‡ä»¶æ‰©å±•å
+		CString FileName = dlg.GetFileName();	 //è·å–æ–‡ä»¶å
 		m_FilePath=dlg.GetFolderPath();
-		m_EntName.MakeLower();             //½«ÎÄ¼şÀ©Õ¹Ãû×ª»»ÎªÒ»¸öĞ¡Ğ´×Ö·û
-		Invalidate();                    //µ÷ÓÃ¸Ãº¯Êı¾Í»áµ÷ÓÃOnDrawÖØ»æ»­Í¼
-		USES_CONVERSION;				 //»ñµÃÈ«¾Ö±äÁ¿m_srcimage
+		m_EntName.MakeLower();             //å°†æ–‡ä»¶æ‰©å±•åè½¬æ¢ä¸ºä¸€ä¸ªå°å†™å­—ç¬¦
+		Invalidate();                    //è°ƒç”¨è¯¥å‡½æ•°å°±ä¼šè°ƒç”¨OnDrawé‡ç»˜ç”»å›¾
+		USES_CONVERSION;				 //è·å¾—å…¨å±€å˜é‡m_srcimage
 		m_SrcImg = cv::imread(W2A(m_BmpName), 1);
-		AfxGetMainWnd()->SetWindowText(L"³Äµ×±íÃæÁÑÎÆÆÀ¼ÛÏµÍ³-" + FileName);
+		AfxGetMainWnd()->SetWindowText(L"è¡¬åº•è¡¨é¢è£‚çº¹è¯„ä»·ç³»ç»Ÿ-" + FileName);
 	}
 }
 
 void CdocumentView::OnEdge()
 {
-	// TODO: ÔÚ´ËÌí¼ÓÃüÁî´¦Àí³ÌĞò´úÂë
-	//ÅĞ¶ÏÊÇ·ñÒÑ¾­´ò¿ªÍ¼Æ¬
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
+	//åˆ¤æ–­æ˜¯å¦å·²ç»æ‰“å¼€å›¾ç‰‡
 	if (m_SrcImg.empty())
 	{
-		MessageBox(TEXT("ÇëÏÈ´ò¿ªÒ»·ùÒª´¦ÀíµÄÍ¼Ïñ"));
+		MessageBox(TEXT("è¯·å…ˆæ‰“å¼€ä¸€å¹…è¦å¤„ç†çš„å›¾åƒ"));
 		return;
 	}
-	double d[8] = { 0 };			//ÓÃÓÚ´æ·ÅsobelËã×ÓµÄÖĞ¼ä±äÁ¿
-	CThreshold Dlg;					//¶¨Òå¶Ô»°¿òÀà¶ÔÏó
+	double d[8] = { 0 };			//ç”¨äºå­˜æ”¾sobelç®—å­çš„ä¸­é—´å˜é‡
+	CThreshold Dlg;					//å®šä¹‰å¯¹è¯æ¡†ç±»å¯¹è±¡
 	cv::String FilePath = m_FilePath+"/Threshold.bmp";
 	Dlg.m_Threshold = m_threshold;
 	Dlg.m_open = m_open;
@@ -234,21 +231,21 @@ void CdocumentView::OnEdge()
 		m_imgrows = m_SrcImg.rows;
 		cv::cvtColor(m_SrcImg, m_GrayImg, CV_BGR2GRAY);
 
-		//»ñÈ¡Ã¿Ò»¸öÏñËØµãµÄ»Ò¶ÈÖµ
+		//è·å–æ¯ä¸€ä¸ªåƒç´ ç‚¹çš„ç°åº¦å€¼
 		for (int i = 0; i<m_imgcols; i++)
 			for (int j = 0; j < m_imgrows; j++)
 			{
 				original[i][j] = (int)m_GrayImg.at<uchar>(j, i);
 			}
 
-		//sobelËã×ÓÔËËã
+		//sobelç®—å­è¿ç®—
 		for (int i = 0; i<m_imgcols; i++)
 			for (int j = 0; j < m_imgrows; j++)
 			{
 				d[0] = pow((5 * original[i - 1][j - 1] + 5 * original[i - 1][j] + 5 * original[i - 1][j + 1] - 3 * original[i][j - 1] 
-					- 3 * original[i][j + 1] - 3 * original[i + 1][j - 1] - 3 * original[i + 1][j] - 3 * original[i + 1][j + 1]), 2);		//SobelËã×ÓµÄdx[´¹Ö±Ìİ¶È]
+					- 3 * original[i][j + 1] - 3 * original[i + 1][j - 1] - 3 * original[i + 1][j] - 3 * original[i + 1][j + 1]), 2);		//Sobelç®—å­çš„dx[å‚ç›´æ¢¯åº¦]
 				d[1] = pow(((-3) * original[i - 1][j - 1] + 5 * original[i - 1][j] + 5 * original[i - 1][j + 1] - 3 * original[i][j - 1] 
-					+ 5 * original[i][j + 1] - 3 * original[i + 1][j - 1] - 3 * original[i + 1][j] - 3 * original[i + 1][j + 1]), 2);		//SobelËã×ÓµÄdy[Ë®Æ½Ìİ¶È]
+					+ 5 * original[i][j + 1] - 3 * original[i + 1][j - 1] - 3 * original[i + 1][j] - 3 * original[i + 1][j + 1]), 2);		//Sobelç®—å­çš„dy[æ°´å¹³æ¢¯åº¦]
 				d[2] = pow(((-3) * original[i - 1][j - 1] - 3 * original[i - 1][j] + 5 * original[i - 1][j + 1] - 3 * original[i][j - 1] 
 					+ 5 * original[i][j + 1] - 3 * original[i + 1][j - 1] - 3 * original[i + 1][j] + 5 * original[i + 1][j + 1]), 2);
 				d[3] = pow(((-3) * original[i - 1][j - 1] - 3 * original[i - 1][j] - 3 * original[i - 1][j + 1] - 3 * original[i][j - 1] 
@@ -268,7 +265,7 @@ void CdocumentView::OnEdge()
 					m_GrayImg.at<uchar>(j, i) = 0;
 			}
 
-		//ÏÈ¸¯Ê´ºóÅòÕÍ´¦Àí£¬Ïû³ıÔëµã
+		//å…ˆè…èš€åè†¨èƒ€å¤„ç†ï¼Œæ¶ˆé™¤å™ªç‚¹
 		cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(m_open, m_open));
 		erode(m_GrayImg, m_GrayImg, element);
 		dilate(m_GrayImg, m_GrayImg, element);
@@ -277,7 +274,7 @@ void CdocumentView::OnEdge()
 		dilate(imgGray, imgGray, element1);
 		erode(imgGray, imgGray, element1);*/
 
-		//Í¼ÏñÏÔÊ¾£¬ÎªÁË·½±ãµ÷ÓÃÏÔÊ¾º¯Êı
+		//å›¾åƒæ˜¾ç¤ºï¼Œä¸ºäº†æ–¹ä¾¿è°ƒç”¨æ˜¾ç¤ºå‡½æ•°
 		Mat OutImage = ~m_GrayImg;
 		cv::imwrite(FilePath, OutImage);
 		USES_CONVERSION;
@@ -290,10 +287,10 @@ void CdocumentView::OnEdge()
 
 void CdocumentView::OnCrack()
 {
-	// TODO: ÔÚ´ËÌí¼ÓÃüÁî´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
 	if (m_GrayImg.empty())
 	{
-		MessageBox(TEXT("ÇëÏÈÍê³ÉÍ¼ÏñµÄ±ßÔµ¼ì²â"));
+		MessageBox(TEXT("è¯·å…ˆå®Œæˆå›¾åƒçš„è¾¹ç¼˜æ£€æµ‹"));
 		return;
 	}
 	cv::String FilePath =m_FilePath+ "/Crack.bmp";
@@ -315,7 +312,7 @@ void CdocumentView::OnCrack()
 		findContours(out, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
 		Scalar color = Scalar(255, 255, 0);
 		
-		//»ñµÃ¾§Æ¬ÄÚµÄÁÑÎÆÂÖÀª
+		//è·å¾—æ™¶ç‰‡å†…çš„è£‚çº¹è½®å»“
 		int MaxArea = 0,MaxID=0;
 		for (int i = 0; i < hierarchy.size(); i++)
 		{
@@ -339,14 +336,14 @@ void CdocumentView::OnCrack()
 		//CString STemp;
 		//STemp.Format(_T("%d  %d"), boundRect.x+ boundRect.width/2, boundRect.y + boundRect.height / 2);
 		//MessageBox(STemp);
-		//Çå¿Õcontours¡¢hierarchyÄÚµÄÊı¾İ
+		//æ¸…ç©ºcontoursã€hierarchyå†…çš„æ•°æ®
 		vector<vector<Point>>().swap(contours);
 		vector<Vec4i>().swap(hierarchy);
 		cv::cvtColor(image3, image3, CV_RGB2GRAY);
 		threshold(image3, image4, 20, 255, THRESH_BINARY);
 		findContours(image4, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
-		//È¥³ı¾§Æ¬ÄÚµÄÔëµã
+		//å»é™¤æ™¶ç‰‡å†…çš„å™ªç‚¹
 		if (m_big == 0)
 		{
 			for (int i = 0; i < hierarchy.size(); i++)
@@ -360,7 +357,7 @@ void CdocumentView::OnCrack()
 		}
 		else if (m_small > m_big)
 		{
-			MessageBox(TEXT("Ğ¡Á¬Í¨ÓòÖµĞèĞ¡ÓÚ´óÁ¬Í¨ÓòÖµ"));
+			MessageBox(TEXT("å°è¿é€šåŸŸå€¼éœ€å°äºå¤§è¿é€šåŸŸå€¼"));
 			return;
 		}
 		else
@@ -378,7 +375,7 @@ void CdocumentView::OnCrack()
 		//dilate(m_CrackImg, m_CrackImg, element);
 		//erode(image5, image5, element);
 
-		//Çå¿Õcontours¡¢hierarchyÄÚµÄÊı¾İ
+		//æ¸…ç©ºcontoursã€hierarchyå†…çš„æ•°æ®
 		vector<vector<Point>>().swap(contours);
 		vector<Vec4i>().swap(hierarchy);
 		Mat OutImage = ~m_CrackImg;
@@ -387,7 +384,7 @@ void CdocumentView::OnCrack()
 		std::string filepath = FilePath;
 		m_BmpName = A2W(filepath.c_str());
 		Invalidate();
-		//Çå³ıcontours¡¢hierarchyÄÚµÄÊı¾İ£¬Ğ§¹û²»ĞĞ
+		//æ¸…é™¤contoursã€hierarchyå†…çš„æ•°æ®ï¼Œæ•ˆæœä¸è¡Œ
 		//contours.clear();
 		//hierarchy.clear();
 	}
@@ -396,17 +393,17 @@ void CdocumentView::OnCrack()
 
 void CdocumentView::OnParameters()
 {
-	// TODO: ÔÚ´ËÌí¼ÓÃüÁî´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
 	if (m_CrackImg.empty())
 	{
-		MessageBox(TEXT("ÇëÏÈÍê³ÉÍ¼ÏñµÄÌáÈ¡ÁÑÎÆ"));
+		MessageBox(TEXT("è¯·å…ˆå®Œæˆå›¾åƒçš„æå–è£‚çº¹"));
 		return;
 	}
 	CTwoDimension Dlg;
 	vector<vector<Point>>contours(10000);
 	vector<Vec4i>hierarchy(10000);
-	Rect boundRect;			//¶¨ÒåÍâ½Ó¾ØĞÎ
-	RotatedRect box;		//¶¨Òå×îĞ¡Íâ½Ó¾ØĞÎ
+	Rect boundRect;			//å®šä¹‰å¤–æ¥çŸ©å½¢
+	RotatedRect box;		//å®šä¹‰æœ€å°å¤–æ¥çŸ©å½¢
 	Point2f rect[4];
 	cv::String FilePath = m_FilePath + "/Parameter.bmp";
 	Mat image5 = Mat(m_imgrows, m_imgcols, CV_8UC1, Scalar(0, 0, 0));
@@ -420,21 +417,21 @@ void CdocumentView::OnParameters()
 	{
 		int area = (int)contourArea(contours[i]);
 		drawContours(m_ParaImg, contours, i, color, -1, 8, hierarchy);
-		box = minAreaRect(Mat(contours[i]));				//¼ÆËãÂÖÀª×îĞ¡Íâ½Ó¾ØĞÎ
+		box = minAreaRect(Mat(contours[i]));				//è®¡ç®—è½®å»“æœ€å°å¤–æ¥çŸ©å½¢
 		boundRect = boundingRect(Mat(contours[i]));
 		circle(m_ParaImg, Point((int)(box.center.x), (int)(box.center.y)), 5, Scalar(0, 255, 0), -1, 8);
 		rectangle(m_ParaImg, Point(boundRect.x, boundRect.y), Point(boundRect.x + boundRect.width, boundRect.y + boundRect.height), Scalar(0, 255, 0), 2, 8);
-		//cout << "µÚ" << i << "¸öÂÖÀªµÄÍâ½Ó¾ØĞÎ¶¥µã×ø±ê£¨" << boundRect.x << "£¬" << boundRect.y << "£©" << endl;
-		//cout << "µÚ" << i << "¸öÂÖÀªµÄÍâ½Ó¾ØĞÎ³¤¿í" << boundRect.width << " " << boundRect.height << endl;
+		//cout << "ç¬¬" << i << "ä¸ªè½®å»“çš„å¤–æ¥çŸ©å½¢é¡¶ç‚¹åæ ‡ï¼ˆ" << boundRect.x << "ï¼Œ" << boundRect.y << "ï¼‰" << endl;
+		//cout << "ç¬¬" << i << "ä¸ªè½®å»“çš„å¤–æ¥çŸ©å½¢é•¿å®½" << boundRect.width << " " << boundRect.height << endl;
 		if (boundRect.width < boundRect.height)
 			Dlg.m_lwr = (double)(boundRect.width)/ boundRect.height;
 		else
 			Dlg.m_lwr = (double)(boundRect.height) / boundRect.width;
-		box.points(rect);  //°Ñ×îĞ¡Íâ½Ó¾ØĞÎËÄ¸ö¶Ëµã¸´ÖÆ¸ørectÊı×é
+		box.points(rect);  //æŠŠæœ€å°å¤–æ¥çŸ©å½¢å››ä¸ªç«¯ç‚¹å¤åˆ¶ç»™rectæ•°ç»„
 		for (int j = 0; j<4; j++)
 		{
-			//cout << "µÚ" << i << "¸öÂÖÀªµÄÍâ½Ó×îĞ¡¾ØĞÎ¶¥µã×ø±ê£¨" << rect[j].x << "£¬" << rect[j].y << "£©" << endl;
-			line(m_ParaImg, rect[j], rect[(j + 1) % 4], Scalar(0, 0, 255), 2, 8);	//»æÖÆ×îĞ¡Íâ½Ó¾ØĞÎÃ¿Ìõ±ß
+			//cout << "ç¬¬" << i << "ä¸ªè½®å»“çš„å¤–æ¥æœ€å°çŸ©å½¢é¡¶ç‚¹åæ ‡ï¼ˆ" << rect[j].x << "ï¼Œ" << rect[j].y << "ï¼‰" << endl;
+			line(m_ParaImg, rect[j], rect[(j + 1) % 4], Scalar(0, 0, 255), 2, 8);	//ç»˜åˆ¶æœ€å°å¤–æ¥çŸ©å½¢æ¯æ¡è¾¹
 		}
 		double a = sqrt((rect[0].x- rect[1].x)*(rect[0].x - rect[1].x)+ (rect[0].y - rect[1].y)*(rect[0].y - rect[1].y));
 		double b = sqrt((rect[1].x - rect[2].x)*(rect[1].x - rect[2].x) + (rect[1].y - rect[2].y)*(rect[1].y - rect[2].y));
@@ -458,18 +455,18 @@ void CdocumentView::OnParameters()
 		Dlg.m_length = length/2;
 		Dlg.m_circle = 4 * PI*area / length / length;
 		Dlg.m_position.Format(_T("(%d,%d)"), boundRect.x - m_Point_x,- boundRect.y + m_Point_y);
-		//cout << "µÚ" << i << "¸öÂÖÀªµÄÃæ»ıÎª" << area << endl;
-		//cout << "µÚ" << i << "¸öÂÖÀªµÄÖÜ³¤Îª" << length << endl;
+		//cout << "ç¬¬" << i << "ä¸ªè½®å»“çš„é¢ç§¯ä¸º" << area << endl;
+		//cout << "ç¬¬" << i << "ä¸ªè½®å»“çš„å‘¨é•¿ä¸º" << length << endl;
 			
-		/*¸øÁÑÎÆ»æÖÆÄâºÏÖ±Ïß £¬µ«¼ÆËã³¤¶È²»×¼È·*/
+		/*ç»™è£‚çº¹ç»˜åˆ¶æ‹Ÿåˆç›´çº¿ ï¼Œä½†è®¡ç®—é•¿åº¦ä¸å‡†ç¡®*/
 		/*cv::Vec4f line_para;
 		cv::fitLine(contours[i], line_para, cv::DIST_L2, 0, 1e-2, 1e-2);
-		//»ñÈ¡µãĞ±Ê½µÄµãºÍĞ±ÂÊ  
+		//è·å–ç‚¹æ–œå¼çš„ç‚¹å’Œæ–œç‡  
 		cv::Point point0;
 		point0.x = line_para[2];
 		point0.y = line_para[3];
 		double k = line_para[1] / line_para[0];
-		//¼ÆËãÖ±ÏßµÄ¶Ëµã(y = k(x - x0) + y0)  
+		//è®¡ç®—ç›´çº¿çš„ç«¯ç‚¹(y = k(x - x0) + y0)  
 		cv::Point point1, point2;
 		point1.x = 0;
 		point1.y = k * (0 - point0.x) + point0.y;
@@ -479,11 +476,11 @@ void CdocumentView::OnParameters()
 	}
 	Dlg.m_image = m_ParaImg;
 
-	//Çå¿Õcontours¡¢hierarchyÄÚµÄÊı¾İ
+	//æ¸…ç©ºcontoursã€hierarchyå†…çš„æ•°æ®
 	vector<vector<Point>>().swap(contours);
 	vector<Vec4i>().swap(hierarchy);
 
-	//±£´æÍ¼Ïñ²¢ÏÔÊ¾
+	//ä¿å­˜å›¾åƒå¹¶æ˜¾ç¤º
 	Mat OutImage = ~m_ParaImg;
 	cv::imwrite(FilePath, OutImage);
 	USES_CONVERSION;
@@ -496,7 +493,7 @@ void CdocumentView::OnParameters()
 
 void CdocumentView::OnReplace()
 {
-	// TODO: ÔÚ´ËÌí¼ÓÃüÁî´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
 	CReplace Dlg;
 	Dlg.m_Number = m_number;
 	Dlg.m_FilePath = m_Filepath;
@@ -508,27 +505,27 @@ void CdocumentView::OnReplace()
 		string filepath;
 		USES_CONVERSION;
 		filepath = W2A(Dlg.m_FilePath);
-		for (UINT number= 0; number <= m_number; number++)		 //Í¼ÏñÃüÃû¹æÔòÎª00*.bmp
+		for (UINT number= 0; number <= m_number; number++)		 //å›¾åƒå‘½åè§„åˆ™ä¸º00*.bmp
 		{
 			ostringstream oss;
-			oss << filepath << "\\" << setw(4) << setfill('0') << number << ".bmp";//ÎÄ¼şÊäÈëÂ·¾¶
+			oss << filepath << "\\" << setw(4) << setfill('0') << number << ".bmp";//æ–‡ä»¶è¾“å…¥è·¯å¾„
 			Mat src = imread(oss.str(), 0);
-			for (int i = 0; i < 1200; i++)					//»ñÈ¡Ã¿Ò»ÏñËØµãµÄ»Ò¶ÈÖµ
+			for (int i = 0; i < 1200; i++)					//è·å–æ¯ä¸€åƒç´ ç‚¹çš„ç°åº¦å€¼
 				for (int j = 0; j < 1600; j++)
 				{
 					Lap[i][j] = (int)src.at<uchar>(i, j);
 				}
 
-			for (int i = 5; i < 1200 - 5; i++)				//»ñÈ¡Ã¿Ò»ÏñËØµãÀ­ÆÕÀ­Ë¹±ä»»ºóµÄ»Ò¶ÈÖµ
+			for (int i = 5; i < 1200 - 5; i++)				//è·å–æ¯ä¸€åƒç´ ç‚¹æ‹‰æ™®æ‹‰æ–¯å˜æ¢åçš„ç°åº¦å€¼
 				for (int j = 5; j < 1600 - 5; j++)
 				{
 					newLap[i][j] = abs(2 * Lap[i][j] - Lap[i - s][j] - Lap[i + s][j]) + abs(2 * Lap[i][j] - Lap[i][j - s] - Lap[i][j + s]);
-					newLap_sum[number] += newLap[i][j];		//²ãÊıµş¼Ó
+					newLap_sum[number] += newLap[i][j];		//å±‚æ•°å åŠ 
 				}
-			for (int i = 0; i < 1200; i++)					//±È½ÏÃ¿Ò»ÏñËØµãµÄ»Ò¶ÈÖµ´óÓÚ·§ÖµÇÒÖ®Ç°Í¼ÏñµÄ»Ò¶ÈÖµ´óÔòÌæ»»
+			for (int i = 0; i < 1200; i++)					//æ¯”è¾ƒæ¯ä¸€åƒç´ ç‚¹çš„ç°åº¦å€¼å¤§äºé˜€å€¼ä¸”ä¹‹å‰å›¾åƒçš„ç°åº¦å€¼å¤§åˆ™æ›¿æ¢
 				for (int j = 0; j < 1600; j++)
 				{
-					if (Max[i][j] < newLap[i][j] && newLap[i][j]>10)		//Éè¶¨ãĞÖµ
+					if (Max[i][j] < newLap[i][j] && newLap[i][j]>10)		//è®¾å®šé˜ˆå€¼
 					{
 						Max[i][j] = newLap[i][j];
 						high[i][j] = number;
@@ -542,10 +539,10 @@ void CdocumentView::OnReplace()
 
 void CdocumentView::OnDepth()
 {
-	 //TODO: ÔÚ´ËÌí¼ÓÃüÁî´¦Àí³ÌĞò´úÂë
+	 //TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
 	if (m_Filepath.IsEmpty())
 	{
-		MessageBox(TEXT("ÇëÏÈÑ¡ÔñÎÄ¼ş¼Ğ"));
+		MessageBox(TEXT("è¯·å…ˆé€‰æ‹©æ–‡ä»¶å¤¹"));
 		return;
 	}
 	CDepth Dlg;
@@ -562,7 +559,7 @@ void CdocumentView::OnDepth()
 			buf[i + 1] = '/';
 		else
 			buf[i + 1] = buf[i];
-	ofstream outfile1(buf);//Êä³öÎÄ¼şÂ·¾¶
+	ofstream outfile1(buf);//è¾“å‡ºæ–‡ä»¶è·¯å¾„
 	strcpy(buf, filepath.c_str());
 	strcat(buf, "/y2.txt");
 	for (int i = (int)strlen(buf); i > 0; i--)
@@ -572,7 +569,7 @@ void CdocumentView::OnDepth()
 			buf[i + 1] = '/';
 		else
 			buf[i + 1] = buf[i];
-	ofstream outfile2(buf);//Êä³öÎÄ¼şÂ·¾¶
+	ofstream outfile2(buf);//è¾“å‡ºæ–‡ä»¶è·¯å¾„
 	int max_layer = 0;
 	int min_layer = 0;
 	for (uint i = 0; i<m_number; i++)
@@ -583,7 +580,7 @@ void CdocumentView::OnDepth()
 		}
 		outfile2 << newLap_sum[i] << '\t' << (newLap_sum[i + 3] - newLap_sum[i]) / 3 << '\n';
 	}
-	outfile2 << "À­ÆÕÀ­Ë¹±ä»»×î´óÖµËùÔÚ²ãÊı" << max_layer << '\n';
+	outfile2 << "æ‹‰æ™®æ‹‰æ–¯å˜æ¢æœ€å¤§å€¼æ‰€åœ¨å±‚æ•°" << max_layer << '\n';
 	int sum;
 	for (int i = 6; i<1200 - 6; i++)
 		for (int j = 6; j<1600 - 6; j++)
@@ -602,7 +599,7 @@ void CdocumentView::OnDepth()
 					high[i][j] = (int)sum / c;
 			}
 	int temp = 0;
-	//²éÕÒÁÑ·ìµÄµ×ÃæËùÔÚÎ»ÖÃ
+	//æŸ¥æ‰¾è£‚ç¼çš„åº•é¢æ‰€åœ¨ä½ç½®
 	for (UINT t = max_layer; t <= m_number; t++)
 		for (int i = 6; i<1200 - 6; i++)
 		{
@@ -634,8 +631,8 @@ void CdocumentView::OnDepth()
 	for (int i = 5; i<1200 - 5; i++)
 	{
 		for (int j = 5; j<1600 - 5; j++)
-			outfile1 << 250 - high[i][j] << '\t';   //ÔªËØ¼ä²åÈëË®Æ½ÖÆ±íÎ»
-		outfile1 << endl;                    //Ã¿ĞĞ¼ÓÒ»»Ø³µ
+			outfile1 << 250 - high[i][j] << '\t';   //å…ƒç´ é—´æ’å…¥æ°´å¹³åˆ¶è¡¨ä½
+		outfile1 << endl;                    //æ¯è¡ŒåŠ ä¸€å›è½¦
 	}
 	float highacc[256];
 	int layer=0;
@@ -648,7 +645,7 @@ void CdocumentView::OnDepth()
 			buf[i + 1] = '/';
 		else
 			buf[i + 1] = buf[i];
-	ifstream infile(buf);//ÊäÈëÎÄ¼şÂ·¾¶
+	ifstream infile(buf);//è¾“å…¥æ–‡ä»¶è·¯å¾„
 	if (infile.is_open()) {
 		std::string tmp;
 		while (getline(infile, tmp)) {
@@ -666,10 +663,10 @@ void CdocumentView::OnDepth()
 
 void CdocumentView::On3drest()
 {
-	// TODO: ÔÚ´ËÌí¼ÓÃüÁî´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
 	if (m_Filepath.IsEmpty())
 	{
-		MessageBox(TEXT("ÇëÏÈÑ¡ÔñÎÄ¼ş¼Ğ"));
+		MessageBox(TEXT("è¯·å…ˆé€‰æ‹©æ–‡ä»¶å¤¹"));
 		return;
 	}
 	char buf[200];
@@ -709,7 +706,7 @@ void CdocumentView::On3drest()
 	engPutVariable(ep, "y", y1);
 	engEvalString(ep, "figure(2)");
 	engEvalString(ep, "plot(x,y)");
-	engEvalString(ep, "title('À­ÆÕÀ­Ë¹Ö®ºÍ')");
+	engEvalString(ep, "title('æ‹‰æ™®æ‹‰æ–¯ä¹‹å’Œ')");
 	for (UINT i = 0; i <= m_number; i++)
 	{
 		x[i] = i;
@@ -724,15 +721,15 @@ void CdocumentView::On3drest()
 	engPutVariable(ep, "y", y1);
 	engEvalString(ep, "figure(3)");
 	engEvalString(ep, "plot(x,y)");
-	engEvalString(ep, "title('Çóµ¼')");
-	//CString filepath = _T("C:\\Users\\Administrator.XJB-01810111549\\Desktop\\³Äµ×È±Ïİ¼ì²â¿ÎÌâ\\04\\y1.txt"); 
-	//engEvalString(ep, "z=textread('F://ÁÑÎÆÈıÎ¬¼ì²â/02/y1.txt')");
+	engEvalString(ep, "title('æ±‚å¯¼')");
+	//CString filepath = _T("C:\\Users\\Administrator.XJB-01810111549\\Desktop\\è¡¬åº•ç¼ºé™·æ£€æµ‹è¯¾é¢˜\\04\\y1.txt"); 
+	//engEvalString(ep, "z=textread('F://è£‚çº¹ä¸‰ç»´æ£€æµ‹/02/y1.txt')");
 	engEvalString(ep, "z=textread(buf)");
 	engEvalString(ep, "h=fspecial('average',[9 9])");
 	engEvalString(ep, "z1=filter2(h,z)");
 	engEvalString(ep, "figure(4)");
 	engEvalString(ep, "mesh(z1)");
-	engEvalString(ep, "title('ÈıÎ¬ÖØ¹¹')");
+	engEvalString(ep, "title('ä¸‰ç»´é‡æ„')");
 	engEvalString(ep, "axis tight");
 	//engClose(ep);
 }
@@ -740,7 +737,7 @@ void CdocumentView::On3drest()
 char buf[200];
 void CdocumentView::OnFuse()
 {
-	// TODO: ÔÚ´ËÌí¼ÓÃüÁî´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
 	string filepath;
 	USES_CONVERSION;
 	filepath = W2A(m_FilePath);
@@ -760,7 +757,7 @@ void CdocumentView::OnFuse()
 Vec4i GetRect(vector<Point> &contours)
 {
 	int xmin, xmax, ymin, ymax;
-	xmin = xmax = contours[0].x;//xÎª¿í¶È·½Ïò£¬yÎª¸ß¶È·½Ïò
+	xmin = xmax = contours[0].x;//xä¸ºå®½åº¦æ–¹å‘ï¼Œyä¸ºé«˜åº¦æ–¹å‘
 	ymin = ymax = contours[0].y;
 	for (int i = 0; i < contours.size(); i++)
 	{
@@ -784,14 +781,14 @@ double Dis_point2Line(Point2f center, Point p1, Point p2)
 		return abs((double)(center.y - p1.y));
 	}
 	double  k = (double)((p1.y - p2.y) / (double)(p1.x - p2.x));
-	double  b = p1.y - k*p1.x; //Ö±Ïß¹«Ê½Îª kx-y+b=0;
+	double  b = p1.y - k*p1.x; //ç›´çº¿å…¬å¼ä¸º kx-y+b=0;
 	dis = abs((double)(k*center.x - center.y + b)) / sqrt(k*k + 1);
 	return dis;
 }
 
 void CdocumentView::OnOther()
 {
-	// TODO: ÔÚ´ËÌí¼ÓÃüÁî´¦Àí³ÌĞò´úÂë
+	// TODO: åœ¨æ­¤æ·»åŠ å‘½ä»¤å¤„ç†ç¨‹åºä»£ç 
 	COther Dlg;
 	cv::String FilePath = m_FilePath + "/Hough.bmp";
 	vector<vector<Point>> contours;
@@ -803,7 +800,7 @@ void CdocumentView::OnOther()
 	{
 		/*cout << "error" << endl;*/
 		/*break;*/
-		MessageBox(TEXT("¶ÁÈëÍ¼Æ¬Ê§°Ü"));
+		MessageBox(TEXT("è¯»å…¥å›¾ç‰‡å¤±è´¥"));
 		return;
 	}
 	cvtColor(srcImage, grayImage, COLOR_RGB2GRAY);
@@ -825,8 +822,8 @@ void CdocumentView::OnOther()
 			index = i;
 		}
 	}
-	/*cout << "×î´óÖÜ³¤£º" << maxlen << endl;
-	cout << "ÂÖÀªĞòºÅ£º" << index << endl;*/
+	/*cout << "æœ€å¤§å‘¨é•¿ï¼š" << maxlen << endl;
+	cout << "è½®å»“åºå·ï¼š" << index << endl;*/
 	Dlg.m_perimeter = maxlen;
 	Dlg.m_no = index;
 
@@ -838,7 +835,7 @@ void CdocumentView::OnOther()
 	/*for(size_t i = 0; i < lines.size(); i++)*/
 	
 	float rho = lines[5][0];
-	/*cout << "Ô­µãÀëÖ±ÏßµÄ¾àÀë£º" << rho << endl;*/
+	/*cout << "åŸç‚¹ç¦»ç›´çº¿çš„è·ç¦»ï¼š" << rho << endl;*/
 	Dlg.m_distance = rho;
 	float theta = lines[5][1];
 	Point pt1, pt2;
@@ -852,17 +849,16 @@ void CdocumentView::OnOther()
 	double b1 = atan(-a1);
 	double angle = b1 * 180 / Pi;
 	line(outImage, pt1, pt2, Scalar(0, 0, 255), 4, CV_AA);
-	/*cout << "½Ç¶È:" << angle << endl;
-	cout << "Ö±ÏßµÄÁ½¸ö¶Ëµã;" << endl;*/
+	/*cout << "è§’åº¦:" << angle << endl;
+	cout << "ç›´çº¿çš„ä¸¤ä¸ªç«¯ç‚¹;" << endl;*/
 	/*cout << pt1 << endl;
 	cout << pt2 << endl;*/
 	Dlg.m_angle = angle;
-	Dlg.m_endpoint.Format(_T("(%d,%d)¡¢(%d,%d)"), pt1.x , pt1.y, pt2.x, pt2.y);
-	/*imshow("»ô·òÏß±ä»»", drawing);
+	Dlg.m_endpoint.Format(_T("(%d,%d)ã€(%d,%d)"), pt1.x , pt1.y, pt2.x, pt2.y);
+	/*imshow("éœå¤«çº¿å˜æ¢", drawing);
 	cout << i<< endl;
 	waitKey(0);*/
 
-	/*ÖØ¸´´úÂë£¬×ömodelÊ¹ÓÃ*/
 	rho = lines[8][0];
 	Dlg.m_distance1 = rho;
 	theta = lines[8][1];
@@ -877,8 +873,8 @@ void CdocumentView::OnOther()
 	angle = b1 * 180 / Pi;
 	line(outImage, pt1, pt2, Scalar(0, 0, 255), 4, CV_AA);
 	Dlg.m_angle1 = angle;
-	Dlg.m_endpoint1.Format(_T("(%d,%d)¡¢(%d,%d)"), pt1.x, pt1.y, pt2.x, pt2.y);
-	/*ÖØ¸´´úÂë£¬×ömodelÊ¹ÓÃ*/
+	Dlg.m_endpoint1.Format(_T("(%d,%d)ã€(%d,%d)"), pt1.x, pt1.y, pt2.x, pt2.y);
+	
 
 	double maxc1 = 0;
 	for (int i = 0; i < contours[99].size(); i++)
@@ -890,8 +886,8 @@ void CdocumentView::OnOther()
 			index = i;
 		}
 	}
-	/*cout << "·åÖµµã¾àÀë:" << maxc1 << endl;
-	cout << "·åÖµµã×ø±ê:" << (Point)contours[99][index] << endl;*/
+	/*cout << "å³°å€¼ç‚¹è·ç¦»:" << maxc1 << endl;
+	cout << "å³°å€¼ç‚¹åæ ‡:" << (Point)contours[99][index] << endl;*/
 	Dlg.m_peak = maxc1;
 	Point p = (Point)contours[99][index];
 	Dlg.m_coordinate.Format(_T("(%d,%d)"), p.x, p.y);
